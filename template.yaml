@@ -55,6 +55,8 @@ Resources:
       MemorySize: 128
       Timeout: 100
       Description: Get a game server.
+      Policies:
+        - AmazonECS_FullAccess
       Events:
         Api:
           Type: Api

@@ -7,12 +7,23 @@ const tableName = process.env.SAMPLE_TABLE;
 const dynamodb = require("aws-sdk/clients/dynamodb");
 const docClient = new dynamodb.DocumentClient();
 
+const ecsGameServerTasksUtils = require("../utils/ecsGameServerTasksUtils");
+
 /**
  * A simple example includes a HTTP get method to get all items from a DynamoDB table.
  */
 exports.acquireGameServerHandler = async (event) => {
+  // getAllTasksPublicIps("test", "test", "test");
+  const regionName = "us-east-1";
+  const clusterName = "game-cluster";
+  const serviceName = "game-service";
+  const serverList = await ecsGameServerTasksUtils.getAllTasksPublicIps(
+    regionName,
+    clusterName,
+    serviceName
+  );
   return {
     statusCode: 200,
-    body: JSON.stringify(["game server"]),
+    body: JSON.stringify(serverList),
   };
 };
