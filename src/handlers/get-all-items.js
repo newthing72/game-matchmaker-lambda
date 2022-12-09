@@ -49,6 +49,6 @@ exports.getAllItemsHandler = async (event) => {
   );
   return {
     statusCode: 200,
-    body: JSON.stringify([2, 2, 3, 4, 5]),
+    body: JSON.stringify([2, 2, 3, 4, 5, "new3"]),
   };
 };
