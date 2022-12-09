@@ -13,22 +13,25 @@ const ecsGameServerTasksUtils = require("../utils/ecsGameServerTasksUtils");
  * A simple example includes a HTTP get method to get all items from a DynamoDB table.
  */
 exports.acquireGameServerHandler = async (event) => {
-  // getAllTasksPublicIps("test", "test", "test");
   const regionName = "us-east-1";
   const clusterName = "game-cluster";
-  const serviceName = "game-service";
   let serverList;
   try {
     serverList = await ecsGameServerTasksUtils.getAllTasksPublicIps(
       regionName,
-      clusterName,
-      serviceName
+      clusterName
     );
   } catch (error) {
     // create the server
+    await ecsGameServerTasksUtils.createGameServer(
+      regionName,
+      clusterName,
+      regionName,
+      clusterName
+    );
     return {
       statusCode: 200,
-      body: JSON.stringify(error),
+      body: JSON.stringify(serverList),
     };
   }
 

@@ -1,6 +1,6 @@
 var AWS = require("aws-sdk");
 
-exports.getAllTasksPublicIps = async (regionName, clusterName, serviceName) => {
+exports.getAllTasksPublicIps = async (regionName, clusterName) => {
   const ecs = new AWS.ECS({
     region: regionName,
   });
@@ -62,4 +62,31 @@ exports.getAllTasksPublicIps = async (regionName, clusterName, serviceName) => {
   return publicIpList;
 };
 
-exports.createGameServer = async (region, clusterName, serviceName) => {};
+exports.createGameServer = async (regionName, clusterName) => {
+  const ecs = new AWS.ECS({
+    region: regionName,
+  });
+
+  var paramsTask = {
+    cluster: clusterName,
+    taskDefinition: "game-task:219",
+    launchType: "FARGATE",
+    networkConfiguration: {
+      awsvpcConfiguration: {
+        assignPublicIp: "ENABLED",
+        subnets: ["subnet-06c96d569f4a756c8"],
+        securityGroups: ["sg-045dd765d4d869c08", "sg-0c39de4a792107160"],
+      },
+    },
+  };
+
+  const runTaskResponse = await ecs.runTask(paramsTask).promise();
+  //   const first = runTaskResponse.tasks[0];
+  //   const taskArn = first.taskArn;
+  //   console.log("create taskArn", taskArn);
+  //   var paramsWait = {
+  //     cluster: clusterName,
+  //     tasks: [taskArn],
+  //   };
+  //   await ecs.waitFor("tasksRunning", paramsWait).promise();
+};
