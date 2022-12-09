@@ -17,11 +17,21 @@ exports.acquireGameServerHandler = async (event) => {
   const regionName = "us-east-1";
   const clusterName = "game-cluster";
   const serviceName = "game-service";
-  const serverList = await ecsGameServerTasksUtils.getAllTasksPublicIps(
-    regionName,
-    clusterName,
-    serviceName
-  );
+  let serverList;
+  try {
+    serverList = await ecsGameServerTasksUtils.getAllTasksPublicIps(
+      regionName,
+      clusterName,
+      serviceName
+    );
+  } catch (error) {
+    // create the server
+    return {
+      statusCode: 200,
+      body: JSON.stringify(error),
+    };
+  }
+
   return {
     statusCode: 200,
     body: JSON.stringify(serverList),
