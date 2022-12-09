@@ -47,8 +47,5 @@ exports.getAllItemsHandler = async (event) => {
   console.info(
     `response from: ${event.path} statusCode: ${response.statusCode} body: ${response.body}`
   );
-  return {
-    statusCode: 200,
-    body: JSON.stringify([2, 2, 3, 4, 5, "new3"]),
-  };
+  return response;
 };

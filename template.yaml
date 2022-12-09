@@ -44,6 +44,24 @@ Resources:
             Path: /
             Method: GET
 
+    # This is a Lambda function config associated with the source code: acquire-game-server.js
+  acquireGameServerFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/acquire-game-server.acquireGameServerHandler
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 100
+      Description: Get a game server.
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            Path: /acquire
+            Method: GET
+
   # Simple syntax to create a DynamoDB table with a single attribute primary key, more in
   # https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlesssimpletable
 
