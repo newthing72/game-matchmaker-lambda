@@ -31,7 +31,7 @@ exports.acquireGameServerHandler = async (event) => {
     );
     return {
       statusCode: 200,
-      body: JSON.stringify(serverList),
+      body: JSON.stringify("created server"),
     };
   }
 
