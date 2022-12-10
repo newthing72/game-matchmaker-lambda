@@ -37,6 +37,26 @@ Resources:
             Path: /acquire
             Method: GET
 
+  deadServerCleanupFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/acquire-game-server.acquireGameServerHandler
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 3
+      Description: Kill all dead server.
+      Policies:
+        - AmazonECS_FullAccess
+      Events:
+        CWSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: "rate(1 minute)"
+            Description: test schedule
+            State: ENABLED
+
 Outputs:
   WebEndpoint:
     Description: "API Gateway endpoint URL for Prod stage"
