@@ -23,12 +23,7 @@ exports.acquireGameServerHandler = async (event) => {
     );
   } catch (error) {
     // create the server
-    await ecsGameServerTasksUtils.createGameServer(
-      regionName,
-      clusterName,
-      regionName,
-      clusterName
-    );
+    await ecsGameServerTasksUtils.createGameServer(regionName, clusterName);
     return {
       statusCode: 200,
       body: JSON.stringify("created server"),
