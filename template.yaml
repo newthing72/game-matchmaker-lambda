@@ -40,7 +40,7 @@ Resources:
   deadServerCleanupFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: src/handlers/acquire-game-server.acquireGameServerHandler
+      Handler: src/handlers/dead-server-cleanup.deadServerCleanup
       Runtime: nodejs16.x
       Architectures:
         - x86_64
