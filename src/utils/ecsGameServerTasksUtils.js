@@ -44,7 +44,9 @@ exports.getAllTasksPublicIps = async (regionName, clusterName) => {
   }
 
   params = {
-    NetworkInterfaceIds: networkInterfaceEniList,
+    NetworkInterfaceIds: Object.values(returnMap)
+      .filter((value) => value.networkInterfaceEni != undefined)
+      .map((value) => value.networkInterfaceEni),
   };
 
   const networkInterfacesResponse = await ec2
@@ -89,3 +91,9 @@ exports.createGameServer = async (regionName, clusterName) => {
   //   };
   //   await ecs.waitFor("tasksRunning", paramsWait).promise();
 };
+
+const regionName = "us-east-1";
+const clusterName = "game-cluster";
+exports.getAllTasksPublicIps(regionName, clusterName);
+
+console.log("HI");
