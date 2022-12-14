@@ -43,6 +43,8 @@ exports.deadServerCleanup = async (event) => {
     const address = task.publicIP;
     const healthValue = await callGameHealth(task.publicIP);
 
+    console.log("healthValue", taskMap, healthValue);
+
     const taskArn = task.taskArn;
 
     if (healthValue.inactive_time > 1 * 60 * 1000) {
