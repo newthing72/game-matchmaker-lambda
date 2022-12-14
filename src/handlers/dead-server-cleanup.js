@@ -2,9 +2,8 @@ const ecsGameServerTasksUtils = require("../utils/ecsGameServerTasksUtils");
 
 var AWS = require("aws-sdk");
 
-const grpc = require("grpc");
+const grpc = require("@grpc/grpc-js");
 const protoLoader = require("@grpc/proto-loader");
-const grpc_promise = require("grpc-promise");
 
 const PROTO_PATH = __dirname + "../../../game-proto/NetworkObject.proto";
 
@@ -35,27 +34,36 @@ exports.deadServerCleanup = async (event) => {
     clusterName
   );
 
+  console.log("taskMap", JSON.stringify(taskMap, null, 4));
+
+  const killed = [];
+  const ignored = [];
+
   for (const task of Object.values(taskMap)) {
     const address = task.publicIP;
-    console.log("call ", address);
     const healthValue = await callGameHealth(task.publicIP);
-
-    console.log("healthValue", healthValue);
 
     const taskArn = task.taskArn;
 
     if (healthValue.inactive_time > 1 * 60 * 1000) {
-      console.log("KILLING", taskArn);
       var params = {
         task: taskArn,
         cluster: clusterName,
         reason: "deadServerCleanup",
       };
       await ecs.stopTask(params).promise();
+      killed.push(taskArn);
     } else {
-      console.log("NOT KILLING", taskArn);
+      ignored.push(taskArn);
     }
   }
+
+  const returnData = { killed: killed, ignored: ignored };
+
+  return {
+    statusCode: 200,
+    body: JSON.stringify(returnData),
+  };
 
   // const listTaskResponse = await ecs.listTasks(params).promise();
 
@@ -87,7 +95,10 @@ async function callGameHealth(ip) {
     grpc.credentials.createInsecure()
   );
 
-  grpc_promise.promisifyAll(client);
-
-  return await client.health().sendMessage();
+  return new Promise((resolve, reject) => {
+    client.health({}, function (error, result) {
+      if (error) reject(error);
+      else resolve(result);
+    });
+  });
 }

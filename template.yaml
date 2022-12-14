@@ -26,7 +26,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 3
+      Timeout: 29
       Description: Get a game server.
       Policies:
         - AmazonECS_FullAccess
@@ -45,7 +45,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 3
+      Timeout: 29
       Description: Kill all dead server.
       Policies:
         - AmazonECS_FullAccess
