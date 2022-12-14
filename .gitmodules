@@ -1,0 +1,3 @@
+[submodule "game-proto"]
+	path = game-proto
+	url = https://github.com/newthing72/game-proto.git

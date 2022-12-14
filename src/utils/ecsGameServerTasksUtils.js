@@ -1,6 +1,8 @@
 var AWS = require("aws-sdk");
 
 exports.getAllTasksPublicIps = async (regionName, clusterName) => {
+  const returnMap = {};
+
   const ecs = new AWS.ECS({
     region: regionName,
   });
@@ -15,19 +17,19 @@ exports.getAllTasksPublicIps = async (regionName, clusterName) => {
 
   const listTaskResponse = await ecs.listTasks(params).promise();
 
-  // console.log("listTaskResponse.taskArns", listTaskResponse.taskArns);
-
   params = {
     cluster: clusterName,
     tasks: listTaskResponse.taskArns,
   };
   const describeTasksResponse = await ecs.describeTasks(params).promise();
 
-  // console.log("describeTasksResponse.tasks", describeTasksResponse.tasks);
-
   const networkInterfaceEniList = [];
 
   for (var currentTask of describeTasksResponse.tasks) {
+    const taskArn = currentTask.taskArn;
+
+    returnMap[taskArn] = currentTask;
+
     const currentElasticNetworkInterface = currentTask.attachments[0];
 
     const currentNetworkInterfaceId =
@@ -35,11 +37,11 @@ exports.getAllTasksPublicIps = async (regionName, clusterName) => {
         (element) => element.name == "networkInterfaceId"
       );
 
-    if (currentNetworkInterfaceId)
+    if (currentNetworkInterfaceId) {
       networkInterfaceEniList.push(currentNetworkInterfaceId.value);
+      returnMap[taskArn].networkInterfaceEni = currentNetworkInterfaceId.value;
+    }
   }
-
-  console.log("networkInterfaceEniList", networkInterfaceEniList);
 
   params = {
     NetworkInterfaceIds: networkInterfaceEniList,
@@ -49,17 +51,14 @@ exports.getAllTasksPublicIps = async (regionName, clusterName) => {
     .describeNetworkInterfaces(params)
     .promise();
 
-  console.log("networkInterfacesResponse", networkInterfacesResponse);
-
-  const publicIpList = [];
-
   for (const currentNetowrkInterface of networkInterfacesResponse.NetworkInterfaces) {
-    publicIpList.push(currentNetowrkInterface.Association.PublicIp);
+    Object.values(returnMap).find(
+      (val) =>
+        val.networkInterfaceEni == currentNetowrkInterface.NetworkInterfaceId
+    ).publicIP = currentNetowrkInterface.Association.PublicIp;
   }
 
-  console.log("publicIpList", publicIpList);
-
-  return publicIpList;
+  return returnMap;
 };
 
 exports.createGameServer = async (regionName, clusterName) => {

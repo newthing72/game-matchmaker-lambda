@@ -17,10 +17,11 @@ exports.acquireGameServerHandler = async (event) => {
   const clusterName = "game-cluster";
   let serverList;
   try {
-    serverList = await ecsGameServerTasksUtils.getAllTasksPublicIps(
+    taskMap = await ecsGameServerTasksUtils.getAllTasksPublicIps(
       regionName,
       clusterName
     );
+    serverList = Object.values(taskMap).map((task) => task.publicIP);
   } catch (error) {
     // create the server
     await ecsGameServerTasksUtils.createGameServer(regionName, clusterName);
