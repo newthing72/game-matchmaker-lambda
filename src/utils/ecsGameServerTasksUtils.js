@@ -92,8 +92,8 @@ exports.createGameServer = async (regionName, clusterName) => {
   //   await ecs.waitFor("tasksRunning", paramsWait).promise();
 };
 
-const regionName = "us-east-1";
-const clusterName = "game-cluster";
-exports.getAllTasksPublicIps(regionName, clusterName);
+// const regionName = "us-east-1";
+// const clusterName = "game-cluster";
+// exports.getAllTasksPublicIps(regionName, clusterName);
 
-console.log("HI");
+// console.log("HI");
