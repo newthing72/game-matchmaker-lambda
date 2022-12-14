@@ -15,7 +15,7 @@
 // const gameProto = grpc.loadPackageDefinition(packageDefinition);
 
 // const client = new gameProto.NetworkObjectService(
-//   "44.193.18.182:99",
+//   "34.200.249.189:99",
 //   grpc.credentials.createInsecure()
 // );
 
