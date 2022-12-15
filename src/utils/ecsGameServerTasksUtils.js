@@ -25,8 +25,6 @@ exports.getAllTasksPublicIps = async (regionName, clusterName) => {
   };
   const describeTasksResponse = await ecs.describeTasks(params).promise();
 
-  const networkInterfaceEniList = [];
-
   for (var currentTask of describeTasksResponse.tasks) {
     const taskArn = currentTask.taskArn;
 
@@ -40,15 +38,18 @@ exports.getAllTasksPublicIps = async (regionName, clusterName) => {
       );
 
     if (currentNetworkInterfaceId) {
-      networkInterfaceEniList.push(currentNetworkInterfaceId.value);
       returnMap[taskArn].networkInterfaceEni = currentNetworkInterfaceId.value;
     }
   }
 
+  const networkInterfaces = Object.values(returnMap)
+    .filter((value) => value.networkInterfaceEni != undefined)
+    .map((value) => value.networkInterfaceEni);
+
+  if (networkInterfaces.length == 0) return returnMap;
+
   params = {
-    NetworkInterfaceIds: Object.values(returnMap)
-      .filter((value) => value.networkInterfaceEni != undefined)
-      .map((value) => value.networkInterfaceEni),
+    NetworkInterfaceIds: networkInterfaces,
   };
 
   const networkInterfacesResponse = await ec2
