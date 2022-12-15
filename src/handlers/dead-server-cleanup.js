@@ -34,25 +34,20 @@ exports.deadServerCleanup = async (event) => {
     clusterName
   );
 
-  console.log("taskMap", JSON.stringify(taskMap, null, 4));
-
   const killed = [];
   const ignored = [];
 
-  for (const task of Object.values(taskMap)) {
+  for (const task of Object.values(taskMap).filter(
+    ecsGameServerTasksUtils.healthyGameFilter
+  )) {
     const taskArn = task.taskArn;
-
-    if (task.lastStatus != "RUNNING") {
-      ignored.push(taskArn);
-      continue;
-    }
 
     const address = task.publicIP;
     const healthValue = await callGameHealth(task.publicIP);
 
-    console.log("healthValue", taskMap, healthValue);
+    console.log("healthValue", taskArn, healthValue);
 
-    if (healthValue.inactive_time > 1 * 60 * 1000) {
+    if (healthValue.inactive_time > 5 * 60 * 1000) {
       var params = {
         task: taskArn,
         cluster: clusterName,
@@ -64,6 +59,14 @@ exports.deadServerCleanup = async (event) => {
       ignored.push(taskArn);
     }
   }
+
+  const unhealthArn = Object.values(taskMap)
+    .filter(ecsGameServerTasksUtils.unhealthyGameFilter)
+    .map((task) => task.taskArn);
+
+  console.log("unhealthArn", unhealthArn);
+
+  ignored.push(...unhealthArn);
 
   const returnData = { killed: killed, ignored: ignored };
 
