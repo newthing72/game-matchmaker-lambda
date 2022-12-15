@@ -95,6 +95,12 @@ exports.createGameServer = async (regionName, clusterName) => {
   //   await ecs.waitFor("tasksRunning", paramsWait).promise();
 };
 
+exports.healthyGameFilter = (task) =>
+  task.lastStatus == "RUNNING" && task.healthStatus == "HEALTHY";
+
+exports.unhealthyGameFilter = (task) =>
+  task.lastStatus != "RUNNING" || task.healthStatus != "HEALTHY";
+
 // const regionName = "us-east-1";
 // const clusterName = "game-cluster";
 // exports.getAllTasksPublicIps(regionName, clusterName);

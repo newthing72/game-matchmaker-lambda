@@ -20,10 +20,12 @@ exports.acquireGameServerHandler = async (event) => {
     );
   }
 
-  const serverList = Object.values(taskMap).map((task) => task.publicIP);
+  const serverList = Object.values(taskMap)
+    .filter(ecsGameServerTasksUtils.healthyGameFilter)
+    .map((task) => task.publicIP);
 
   const pendingCount = Object.values(taskMap).filter(
-    (task) => task.lastStatus != "RUNNING"
+    ecsGameServerTasksUtils.unhealthyGameFilter
   ).length;
 
   return {
