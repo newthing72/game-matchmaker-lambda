@@ -53,11 +53,6 @@ Resources:
         CWSchedule:
           Type: Schedule
           Properties:
-            Schedule: "rate(5 minute)"
+            Schedule: "rate(5 minutes)"
             Description: test schedule
-            State: DISABLED
-
-Outputs:
-  WebEndpoint:
-    Description: "API Gateway endpoint URL for Prod stage"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/"
+            State: ENABLED
