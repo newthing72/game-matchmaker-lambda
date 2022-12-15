@@ -49,13 +49,13 @@ Resources:
       Description: Kill all dead server.
       Policies:
         - AmazonECS_FullAccess
-      # Events:
-      #   CWSchedule:
-      #     Type: Schedule
-      #     Properties:
-      #       Schedule: "rate(1 minute)"
-      #       Description: test schedule
-      #       State: DISABLED
+      Events:
+        CWSchedule:
+          Type: Schedule
+          Properties:
+            Schedule: "rate(5 minute)"
+            Description: test schedule
+            State: DISABLED
 
 Outputs:
   WebEndpoint:
