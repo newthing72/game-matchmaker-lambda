@@ -1,12 +1,3 @@
-// Create clients and set shared const values outside of the handler.
-
-// Get the DynamoDB table name from environment variables
-const tableName = process.env.SAMPLE_TABLE;
-
-// Create a DocumentClient that represents the query to add an item
-const dynamodb = require("aws-sdk/clients/dynamodb");
-const docClient = new dynamodb.DocumentClient();
-
 const ecsGameServerTasksUtils = require("../utils/ecsGameServerTasksUtils");
 
 /**
@@ -15,24 +6,31 @@ const ecsGameServerTasksUtils = require("../utils/ecsGameServerTasksUtils");
 exports.acquireGameServerHandler = async (event) => {
   const regionName = "us-east-1";
   const clusterName = "game-cluster";
-  let serverList;
-  try {
+
+  taskMap = await ecsGameServerTasksUtils.getAllTasksPublicIps(
+    regionName,
+    clusterName
+  );
+
+  if (Object.values(taskMap).length == 0) {
+    await ecsGameServerTasksUtils.createGameServer(regionName, clusterName);
     taskMap = await ecsGameServerTasksUtils.getAllTasksPublicIps(
       regionName,
       clusterName
     );
-    serverList = Object.values(taskMap).map((task) => task.publicIP);
-  } catch (error) {
-    // create the server
-    await ecsGameServerTasksUtils.createGameServer(regionName, clusterName);
-    return {
-      statusCode: 200,
-      body: JSON.stringify("created server"),
-    };
   }
+
+  const serverList = Object.values(taskMap).map((task) => task.publicIP);
+
+  const pendingCount = Object.values(taskMap).filter(
+    (task) => task.lastStatus != "RUNNING"
+  ).length;
 
   return {
     statusCode: 200,
-    body: JSON.stringify(serverList),
+    body: JSON.stringify({
+      serverList: serverList,
+      pendingCount: pendingCount,
+    }),
   };
 };

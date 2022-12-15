@@ -17,6 +17,8 @@ exports.getAllTasksPublicIps = async (regionName, clusterName) => {
 
   const listTaskResponse = await ecs.listTasks(params).promise();
 
+  if (listTaskResponse.taskArns.length === 0) return returnMap;
+
   params = {
     cluster: clusterName,
     tasks: listTaskResponse.taskArns,
