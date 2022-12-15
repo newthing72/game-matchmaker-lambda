@@ -27,6 +27,7 @@ Resources:
         - x86_64
       MemorySize: 128
       Timeout: 29
+      ReservedConcurrentExecutions: 1
       Description: Get a game server.
       Policies:
         - AmazonECS_FullAccess

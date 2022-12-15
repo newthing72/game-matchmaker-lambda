@@ -74,7 +74,6 @@ exports.createGameServer = async (regionName, clusterName) => {
   var paramsTask = {
     cluster: clusterName,
     taskDefinition: "game-task",
-    launchType: "FARGATE",
     networkConfiguration: {
       awsvpcConfiguration: {
         assignPublicIp: "ENABLED",
