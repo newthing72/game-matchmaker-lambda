@@ -4,6 +4,14 @@ const ecsGameServerTasksUtils = require("../utils/ecsGameServerTasksUtils");
  * A simple example includes a HTTP get method to get all items from a DynamoDB table.
  */
 exports.acquireGameServerHandler = async (event) => {
+  const headers = event.headers;
+
+  if (headers.authorization != "libgdx-game")
+    return {
+      statusCode: 401,
+      body: JSON.stringify({ msg: "Dont like that authorization" }),
+    };
+
   const regionName = "us-east-1";
   const clusterName = "game-cluster";
 
